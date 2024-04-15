@@ -12,7 +12,6 @@ register_heif_opener()
 
 sourceDirectory, targetDirectory = "", ""
 
-# 디렉토리 선택 함수
 def selectDirectory():
     global sourceDirectory, targetDirectory
     sourceDirectory = filedialog.askdirectory()
@@ -20,14 +19,12 @@ def selectDirectory():
         sourceDirectoryLabel.config(text=f"원본 디렉토리: {sourceDirectory}")
         updateFileList()
 
-# 대상 디렉토리 선택 함수
 def selectTargetDirectory():
     global targetDirectory
     targetDirectory = filedialog.askdirectory()
     if targetDirectory:
         targetDirectoryLabel.config(text=f"대상 디렉토리: {targetDirectory}")
 
-# 파일 목록 업데이트 함수
 def updateFileList():
     fileListbox.delete(0, tk.END)
     heic_files = [f for f in os.listdir(sourceDirectory) if (f.endswith('.heic') or f.endswith(".HEIC"))]
