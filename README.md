@@ -4,9 +4,11 @@
 
 ![heicToJpg](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/assets/47169718/1bb7ca4f-75a7-4750-9dd2-7df214a5d66f)
 
-HeicToJpg windows exe 파일 다운로드: [HeicToJpg.exe](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/blob/main/heicToJpg.exe)
+HeicToJpg windows exe 파일 다운로드
+[HeicToJpg.exe](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/blob/main/heicToJpg.exe)
 
-HeicToJpg windows exe 파일 체크섬[SHA256]: BE3FAF99A6301911F5DB59768C4292AF454BF4F89EB9312C8979645851905928
+HeicToJpg windows exe 파일 체크섬[SHA256]
+BE3FAF99A6301911F5DB59768C4292AF454BF4F89EB9312C8979645851905928
 
 - 사용법
 
