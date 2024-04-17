@@ -8,7 +8,7 @@ HeicToJpg windows exe 파일 다운로드
 [HeicToJpg.exe](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/blob/main/heicToJpg.exe)
 
 HeicToJpg windows exe 파일 체크섬[SHA256]
-82C565BF6D48543ADC1A310C385D89B32B5C01DC1E3605A4F3DB3055D069F7F9
+568CBC6991310ABF96DC15139D62972A1C4A96BC31601E00066AC002C5D270E3
 
 - 패치 리스트
   - 2024-04-17: Heic to Jpg파일 변환시 exif정보는 누락되어 저장되던 문제 해소
