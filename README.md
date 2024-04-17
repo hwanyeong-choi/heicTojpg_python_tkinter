@@ -10,6 +10,9 @@ HeicToJpg windows exe 파일 다운로드
 HeicToJpg windows exe 파일 체크섬[SHA256]
 82C565BF6D48543ADC1A310C385D89B32B5C01DC1E3605A4F3DB3055D069F7F9
 
+- 패치 리스트
+  - 2024-04-17: Heic to Jpg파일 변환시 exif정보는 누락되어 저장되던 문제 해소
+
 - 사용법
 
 1. heic파일이 있는 폴더와 변환된 파일을 저장할 폴더를 준비합니다.
