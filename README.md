@@ -8,7 +8,7 @@ HeicToJpg windows exe 파일 다운로드
 [HeicToJpg.exe](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/blob/main/heicToJpg.exe)
 
 HeicToJpg windows exe 파일 체크섬[SHA256]
-BE3FAF99A6301911F5DB59768C4292AF454BF4F89EB9312C8979645851905928
+82C565BF6D48543ADC1A310C385D89B32B5C01DC1E3605A4F3DB3055D069F7F9
 
 - 사용법
 
