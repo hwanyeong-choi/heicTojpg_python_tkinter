@@ -12,6 +12,7 @@ HeicToJpg windows exe 파일 체크섬[SHA256]
 
 - 패치 리스트
   - 2024-04-17: Heic to Jpg파일 변환시 exif정보는 누락되어 저장되던 문제 해소
+  - 2024-04-18: Heic to Jpg파일 변환시 iccProfile이 누락되어 저장되던 문제 해소
 
 - 사용법
 
