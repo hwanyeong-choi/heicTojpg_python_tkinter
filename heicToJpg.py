@@ -68,7 +68,7 @@ def convertToJpg():
             jpg_file_path = os.path.join(targetDirectory, os.path.splitext(heicFile)[0] + ".jpg")
 
             with Image.open(heicFilePath) as image:
-                image.save(jpg_file_path, "JPEG")
+                image.save(jpg_file_path, "JPEG", exif=image.getexif())
 
             percent =round((i / selectedFilesSize) * 100)
             progressVar.set(percent)
