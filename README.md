@@ -1,6 +1,7 @@
 # Heic To Jpg
 
 - Heic 파일을 jpg로 일괄 변경해주는 Python Tkinter 프로그램
+- Bg: 윈도우에서 아이폰으로 찍은 사진원본을 구글포토에 업로드하고 해당 파일을 다운로드 받았을때 일괄적으로 HEIC를 JPG로 변경할때 일괄적으로 포맷을 변경하기위해 프로그램작성
 
 ![heicToJpg](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/assets/47169718/1bb7ca4f-75a7-4750-9dd2-7df214a5d66f)
 
