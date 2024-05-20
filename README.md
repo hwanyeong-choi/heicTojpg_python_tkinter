@@ -5,12 +5,15 @@
 
 ![스크린샷 2024-05-21 004855](https://github.com/hwanyeong-choi/heicTojpg_python_tkinter/assets/47169718/d40c2ddd-9911-409b-a32e-08a80c802aa9)
 
+---
 
 HeicToJpg windows exe 파일 다운로드
 [HeicToJpg.exe](https://github.com/hwanyeongchoi/heicTojpg_python_tkinter/blob/main/heicToJpg.exe)
 
 HeicToJpg windows exe 파일 체크섬[SHA256]
 8DCA1A74D153497C4C14510E476EB6AE2471C7CC641A3388DC0AAE479950FC8E 
+
+---
 
 - 패치 리스트
   - 2024-04-17: Heic to Jpg파일 변환시 exif정보는 누락되어 저장되던 문제 해소
@@ -22,5 +25,4 @@ HeicToJpg windows exe 파일 체크섬[SHA256]
     4. 멀티 스레드 환경에서 변환을 진행하도록 수정
 
 - 사용법 Youtube
----
   [![Video Label](http://img.youtube.com/vi/oybSIMjcYbM/0.jpg)](https://youtu.be/oybSIMjcYbM)
