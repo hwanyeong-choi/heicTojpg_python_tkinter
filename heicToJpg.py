@@ -1,5 +1,5 @@
 
-from PIL import Image
+from PIL import Image, ImageTk
 from pillow_heif import register_heif_opener
 import tkinter as tk
 from tkinter import ttk
@@ -10,26 +10,25 @@ import threading
 
 register_heif_opener()
 
-sourceDirectory, targetDirectory = "", ""
+sourceDirectory = ""
+fileList = []
 
 def selectDirectory():
-    global sourceDirectory, targetDirectory
+    global sourceDirectory
     sourceDirectory = filedialog.askdirectory()
     if sourceDirectory:
-        sourceDirectoryLabel.config(text=f"원본 디렉토리: {sourceDirectory}")
+        sourceDirectoryLabel.config(text=f"HEIC 파일 폴더 선택: {sourceDirectory}")
         updateFileList()
 
-def selectTargetDirectory():
-    global targetDirectory
-    targetDirectory = filedialog.askdirectory()
-    if targetDirectory:
-        targetDirectoryLabel.config(text=f"대상 디렉토리: {targetDirectory}")
-
 def updateFileList():
+    global fileList
     fileListbox.delete(0, tk.END)
     heic_files = [f for f in os.listdir(sourceDirectory) if (f.endswith('.heic') or f.endswith(".HEIC"))]
     for file in heic_files:
+        print(f"{sourceDirectory}/{file}")
+        fileList.append(file)
         fileListbox.insert(tk.END, file)
+    print(fileList)
 
 def showMessageBox(type, message):
     if (type == "warn"):
@@ -40,46 +39,70 @@ def showMessageBox(type, message):
 
 def heicToJpgConvertStartValidation(selectedFilesSize):
     if (len(sourceDirectory.strip()) == 0):
-        showMessageBox("warn", "파일 조회를 위해 원본 디렉토리를 선택해 주세요.")
-        return False
-
-    if (len(targetDirectory.strip()) == 0):
-        showMessageBox("warn", "변환된 파일을 저장하기 위해 대상 디렉토리를 선택해 주세요.")
+        showMessageBox("warn", "파일 조회를 위해 폴더를 선택해 주세요.")
         return False
 
     if (selectedFilesSize == 0):
-        showMessageBox("warn", "변환할 파일을 선택해 주세요.")
+        showMessageBox("warn", "변환할 파일이 존재하지 않습니다.")
         return False
 
     return True
 
 def convertToJpg():
     progressVar.set(0)
-    selectedFiles = fileListbox.curselection()
-    selectedFilesSize = len(selectedFiles)
+    selectedFilesSize = len(fileList)
 
     if (not  heicToJpgConvertStartValidation(selectedFilesSize)): return
 
-    if selectedFiles and sourceDirectory and targetDirectory:
-        for i in selectedFiles:
+    if not os.path.exists(f"{sourceDirectory}/jpg"):
+        os.mkdir(f"{sourceDirectory}/jpg")
 
-            heicFile = fileListbox.get(i)
-            heicFilePath = os.path.join(sourceDirectory, heicFile)
-            jpg_file_path = os.path.join(targetDirectory, os.path.splitext(heicFile)[0] + ".jpg")
+    if fileList and sourceDirectory:
+        for index, file in enumerate(fileList):
+            heicFilePath = os.path.join(sourceDirectory, file)
+            jpg_file_path = os.path.join(f"{sourceDirectory}/jpg", str(os.path.splitext(file)[0]) + ".jpg")
 
             with Image.open(heicFilePath) as image:
                 iccProfile = image.info.get("icc_profile")
                 exif = image.getexif()
                 image.save(jpg_file_path, "JPEG", exif=exif, icc_profile=iccProfile)
 
-            percent =round((i / selectedFilesSize) * 100)
+            percent =round((index / selectedFilesSize) * 100)
             progressVar.set(percent)
             root.update_idletasks()
-            progressLabel.config(text=f"{percent:.1f}%")
 
-    progressLabel.config(text="100%")
     progressVar.set(100)
     showMessageBox("info", "변환 완료")
+
+def handle_selection(event):
+    selected_index = fileListbox.curselection()
+
+    if selected_index:
+        selected_file = fileListbox.get(selected_index)
+        heicFilePath = f"{sourceDirectory}/{selected_file}"
+        load_image(heicFilePath)
+
+        with Image.open(heicFilePath) as image:
+            exif = image.getexif()
+            exifInfo = f"[제조사: {exif[271]}] [촬영기종: {exif[316]}] [촬영일자: {exif[306]}]"
+            exifInfoLabel.config(text=exifInfo)
+
+def resize_image(image, canvas_width, canvas_height):
+    img_width, img_height = image.size
+    ratio = min(canvas_width / img_width, canvas_height / img_height)
+    new_width = int(img_width * ratio)
+    new_height = int(img_height * ratio)
+    resized_image = image.resize((new_width, new_height))
+    return resized_image
+
+def load_image(path):
+    image = Image.open(path)
+    canvas_width = canvas.winfo_width()
+    canvas_height = canvas.winfo_height()
+    resized_image = resize_image(image, canvas_width, canvas_height)
+    photo = ImageTk.PhotoImage(resized_image)
+    canvas_image = canvas.create_image(canvas_width // 2, canvas_height // 2, image=photo, anchor='center')
+    canvas.image = photo
 
 def convertToJpgStartThread():
     thread = threading.Thread(target=convertToJpg)
@@ -88,42 +111,30 @@ def convertToJpgStartThread():
 
 root = tk.Tk()
 root.title("Heic To Jpg")
-
 root.resizable(False, False)
 
-mainFrame = tk.Frame(root, padx=10, pady=10)
-mainFrame.pack(fill="both", expand=True)
+sourceSelectButton = tk.Button(root, width=20, text="HEIC 파일 폴더 선택", command=selectDirectory)
+sourceSelectButton.grid(row=0, column=0, padx=10, pady=10, sticky='news')
 
-sourceDirectoryFrame = tk.Frame(mainFrame)
-sourceDirectoryFrame.pack(pady=10, fill="x")
+sourceDirectoryLabel = tk.Label(root, width=70, anchor='w', text="HEIC 파일 폴더 선택")
+sourceDirectoryLabel.grid(row=0, column=1, columnspan=2, padx=10, pady=10, sticky='news')
 
-sourceSelectButton = tk.Button(sourceDirectoryFrame, text="원본 디렉토리 선택", command=selectDirectory)
-sourceSelectButton.pack(side="left")
+fileListbox = tk.Listbox(root, width=35, height=15, selectmode=tk.SINGLE)
+fileListbox.bind('<<ListboxSelect>>', handle_selection)
+fileListbox.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky='news')
 
-sourceDirectoryLabel = tk.Label(sourceDirectoryFrame, text="원본 디렉토리: ")
-sourceDirectoryLabel.pack(side="left", padx=10)
+canvas = tk.Canvas(root, width=600, height=300, bg="white")
+canvas.grid(row=2, column=0, columnspan=3, padx=10, pady=10, sticky='news')
 
-targetDirectoryFrame = tk.Frame(mainFrame)
-targetDirectoryFrame.pack(pady=10, fill="x")
-
-targetSelectButton = tk.Button(targetDirectoryFrame, text="대상 디렉토리 선택", command=selectTargetDirectory)
-targetSelectButton.pack(side="left")
-
-targetDirectoryLabel = tk.Label(targetDirectoryFrame, text="대상 디렉토리: ")
-targetDirectoryLabel.pack(side="left", padx=10)
-
-fileListbox = tk.Listbox(mainFrame, width=50, height=15, selectmode=tk.MULTIPLE)
-fileListbox.pack(pady=10)
-
-progressLabel = tk.Label(mainFrame, text="0 %")
-progressLabel.pack()
+exifInfoLabel = tk.Label(root, width=40, anchor='w', text="EXIF 정보")
+exifInfoLabel.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky='news')
 
 progressVar = tk.DoubleVar()
-progressBar = ttk.Progressbar(mainFrame, variable=progressVar, maximum=100)
-progressBar.pack(fill="x", padx=10, pady=10)
+progressBar = ttk.Progressbar(root, variable=progressVar, maximum=100)
+progressBar.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky='news')
 
-convertButton = tk.Button(mainFrame, text="HEIC to JPG 변환", command=convertToJpgStartThread)
-convertButton.pack(pady=10)
+convertButton = tk.Button(root, text="전체 HEIC to JPG 변환", command=convertToJpgStartThread)
+convertButton.grid(row=4, column=2, padx=10, pady=10, sticky='news')
 
 root.after(50)
 
