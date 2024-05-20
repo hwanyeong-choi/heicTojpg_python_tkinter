@@ -13,7 +13,7 @@ HeicToJpg windows exe 파일 체크섬[SHA256]
 8DCA1A74D153497C4C14510E476EB6AE2471C7CC641A3388DC0AAE479950FC8E 
 
 
-### 패치 리스트
+# 패치 리스트
   - 2024-04-17: Heic to Jpg파일 변환시 exif정보는 누락되어 저장되던 문제 해소
   - 2024-04-18: Heic to Jpg파일 변환시 iccProfile이 누락되어 저장되던 문제 해소
   - 2024-05-21: v1
@@ -22,5 +22,5 @@ HeicToJpg windows exe 파일 체크섬[SHA256]
     3. JPEG, PNG 파일타입을 지정하여 변환할 수 있도록 수정
     4. 멀티 스레드 환경에서 변환을 진행하도록 수정
 
-### 사용법 Youtube
+# 사용법 Youtube
   [![Video Label](http://img.youtube.com/vi/oybSIMjcYbM/0.jpg)](https://youtu.be/oybSIMjcYbM)
