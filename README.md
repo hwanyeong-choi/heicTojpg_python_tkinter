@@ -25,4 +25,4 @@ HeicToJpg windows exe 파일 체크섬[SHA256]
     4. 멀티 스레드 환경에서 변환을 진행하도록 수정
 
 - 사용법 Youtube
-  [![Video Label](http://img.youtube.com/vi/oybSIMjcYbM/0.jpg)](https://youtu.be/oybSIMjcYbM)
+-- [![Video Label](http://img.youtube.com/vi/oybSIMjcYbM/0.jpg)](https://youtu.be/oybSIMjcYbM)
