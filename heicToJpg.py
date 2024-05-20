@@ -7,11 +7,22 @@ from tkinter import filedialog
 from tkinter import messagebox
 import os
 import threading
+import concurrent.futures
 
 register_heif_opener()
 
+class ConvertImageType:
+    def __init__(self, type, fileNameType):
+        self.type = type
+        self.fileNameType = fileNameType
+
 sourceDirectory = ""
 fileList = []
+imageType = {}
+imageTypeList = ["JPEG", "PNG"]
+
+imageType["JPEG"] = ConvertImageType("JPEG", "jpg")
+imageType["PNG"] = ConvertImageType("PNG", "png")
 
 def selectDirectory():
     global sourceDirectory
@@ -25,10 +36,8 @@ def updateFileList():
     fileListbox.delete(0, tk.END)
     heic_files = [f for f in os.listdir(sourceDirectory) if (f.endswith('.heic') or f.endswith(".HEIC"))]
     for file in heic_files:
-        print(f"{sourceDirectory}/{file}")
         fileList.append(file)
         fileListbox.insert(tk.END, file)
-    print(fileList)
 
 def showMessageBox(type, message):
     if (type == "warn"):
@@ -48,28 +57,31 @@ def heicToJpgConvertStartValidation(selectedFilesSize):
 
     return True
 
+def convertToJpgFile(file):
+    heicFilePath = os.path.join(sourceDirectory, file)
+    jpg_file_path = os.path.join(f"{sourceDirectory}/{imageType[imageTypeCombo.get()].fileNameType}", str(os.path.splitext(file)[0]) + f".{imageType[imageTypeCombo.get()].fileNameType}")
+
+    with Image.open(heicFilePath) as image:
+        iccProfile = image.info.get("icc_profile")
+        exif = image.getexif()
+        image.save(jpg_file_path, imageType[imageTypeCombo.get()].type, exif=exif, icc_profile=iccProfile)
+
 def convertToJpg():
     progressVar.set(0)
     selectedFilesSize = len(fileList)
+    increment = (1 / selectedFilesSize) * 100
 
-    if (not  heicToJpgConvertStartValidation(selectedFilesSize)): return
+    if (not heicToJpgConvertStartValidation(selectedFilesSize)): return
 
-    if not os.path.exists(f"{sourceDirectory}/jpg"):
-        os.mkdir(f"{sourceDirectory}/jpg")
+    if not os.path.exists(f"{sourceDirectory}/{imageType[imageTypeCombo.get()].fileNameType}"):
+        os.mkdir(f"{sourceDirectory}/{imageType[imageTypeCombo.get()].fileNameType}")
 
     if fileList and sourceDirectory:
-        for index, file in enumerate(fileList):
-            heicFilePath = os.path.join(sourceDirectory, file)
-            jpg_file_path = os.path.join(f"{sourceDirectory}/jpg", str(os.path.splitext(file)[0]) + ".jpg")
-
-            with Image.open(heicFilePath) as image:
-                iccProfile = image.info.get("icc_profile")
-                exif = image.getexif()
-                image.save(jpg_file_path, "JPEG", exif=exif, icc_profile=iccProfile)
-
-            percent =round((index / selectedFilesSize) * 100)
-            progressVar.set(percent)
-            root.update_idletasks()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=round(os.cpu_count() * 0.7)) as executor:
+            futures = [executor.submit(convertToJpgFile, file) for file in fileList]
+            for future in concurrent.futures.as_completed(futures):
+                progressVar.set(round(progressVar.get() + increment))
+                root.update_idletasks()
 
     progressVar.set(100)
     showMessageBox("info", "변환 완료")
@@ -113,28 +125,42 @@ root = tk.Tk()
 root.title("Heic To Jpg")
 root.resizable(False, False)
 
+#
 sourceSelectButton = tk.Button(root, width=20, text="HEIC 파일 폴더 선택", command=selectDirectory)
 sourceSelectButton.grid(row=0, column=0, padx=10, pady=10, sticky='news')
 
-sourceDirectoryLabel = tk.Label(root, width=70, anchor='w', text="HEIC 파일 폴더 선택")
-sourceDirectoryLabel.grid(row=0, column=1, columnspan=2, padx=10, pady=10, sticky='news')
+imageTypeCombo = ttk.Combobox(root, values=imageTypeList, state='readonly')
+imageTypeCombo.set(imageTypeList[0])
+imageTypeCombo.grid(row=0, column=1, padx=10, pady=10,sticky='news')
 
+sourceDirectoryLabel = tk.Label(root, width=70, anchor='w', text="HEIC 파일 폴더 선택")
+sourceDirectoryLabel.grid(row=0, column=2, padx=10, pady=10, sticky='news')
+#
+
+#
 fileListbox = tk.Listbox(root, width=35, height=15, selectmode=tk.SINGLE)
 fileListbox.bind('<<ListboxSelect>>', handle_selection)
 fileListbox.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky='news')
+#
 
+#
 canvas = tk.Canvas(root, width=600, height=300, bg="white")
 canvas.grid(row=2, column=0, columnspan=3, padx=10, pady=10, sticky='news')
+#
 
+#
 exifInfoLabel = tk.Label(root, width=40, anchor='w', text="EXIF 정보")
 exifInfoLabel.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky='news')
+#
 
+#
 progressVar = tk.DoubleVar()
 progressBar = ttk.Progressbar(root, variable=progressVar, maximum=100)
 progressBar.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky='news')
 
 convertButton = tk.Button(root, text="전체 HEIC to JPG 변환", command=convertToJpgStartThread)
 convertButton.grid(row=4, column=2, padx=10, pady=10, sticky='news')
+#
 
 root.after(50)
 
