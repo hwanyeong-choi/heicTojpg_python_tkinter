@@ -86,20 +86,20 @@ def convertToJpg():
     progressVar.set(100)
     showMessageBox("info", "변환 완료")
 
-def handle_selection(event):
+def handleSelection(event):
     selected_index = fileListbox.curselection()
 
     if selected_index:
         selected_file = fileListbox.get(selected_index)
         heicFilePath = f"{sourceDirectory}/{selected_file}"
-        load_image(heicFilePath)
+        loadImage(heicFilePath)
 
         with Image.open(heicFilePath) as image:
             exif = image.getexif()
             exifInfo = f"[제조사: {exif[271]}] [촬영기종: {exif[316]}] [촬영일자: {exif[306]}]"
             exifInfoLabel.config(text=exifInfo)
 
-def resize_image(image, canvas_width, canvas_height):
+def resizeImage(image, canvas_width, canvas_height):
     img_width, img_height = image.size
     ratio = min(canvas_width / img_width, canvas_height / img_height)
     new_width = int(img_width * ratio)
@@ -107,11 +107,11 @@ def resize_image(image, canvas_width, canvas_height):
     resized_image = image.resize((new_width, new_height))
     return resized_image
 
-def load_image(path):
+def loadImage(path):
     image = Image.open(path)
     canvas_width = canvas.winfo_width()
     canvas_height = canvas.winfo_height()
-    resized_image = resize_image(image, canvas_width, canvas_height)
+    resized_image = resizeImage(image, canvas_width, canvas_height)
     photo = ImageTk.PhotoImage(resized_image)
     canvas_image = canvas.create_image(canvas_width // 2, canvas_height // 2, image=photo, anchor='center')
     canvas.image = photo
@@ -139,7 +139,7 @@ sourceDirectoryLabel.grid(row=0, column=2, padx=10, pady=10, sticky='news')
 
 #
 fileListbox = tk.Listbox(root, width=35, height=15, selectmode=tk.SINGLE)
-fileListbox.bind('<<ListboxSelect>>', handle_selection)
+fileListbox.bind('<<ListboxSelect>>', handleSelection)
 fileListbox.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky='news')
 #
 
